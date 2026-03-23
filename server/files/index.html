@@ -6,20 +6,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movies!</title>
     <style>
-        /* Part 3: Your styling goes here */
-    </style>
-    <script>
-        function reverseString(s) {
-            return s.split("").reverse().join("");
+        body {
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            padding: 20px;
+            background-color: #6CBAB4;
         }
 
+        article {
+            background-color: #ffffff;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        img {
+            border-radius: 8px;
+            max-width: 250px;
+            height: auto;
+        }
+
+        h2 {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        span {
+            margin-right: 8px;
+        }
+
+        .genre {
+            background-color: #ACBDBC;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        h3 {
+            margin-bottom: 5px;
+            color: #555555;
+        }
+
+        ul {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+    </style>
+    <script>
         window.onload = function () {
             const xhr = new XMLHttpRequest()
             xhr.onload = function () {
                 const bodyElement = document.querySelector("body")
                 if (xhr.status == 200) {
-		            /* Part 2: Build the HTML elements here and append them to the body */ 
-                    bodyElement.append(reverseString(xhr.responseText))
+		            /* Part 2: Build the HTML elements here and append them to the body */
+                    const movies = JSON.parse(xhr.responseText);
+                    
+                    movies.forEach(movie => {
+                        const article = document.createElement("article");
+
+                        //showing the poster
+                        const poster = document.createElement("img");
+                        poster.src = movie.Poster;
+                        poster.alt = movie.Title + " Poster";
+                        article.appendChild(poster);
+                        //showing the title
+                        const title = document.createElement("h2");
+                        title.textContent = movie.Title;
+                        article.appendChild(title);
+                        //add all the meta info
+                        const metaInfo = document.createElement("p");
+                        const hours = Math.floor(movie.Runtime / 60);
+                        const minutes = movie.Runtime % 60;
+                        const releaseDate = new Date(movie.Released).toLocaleDateString();
+                        metaInfo.textContent = `Runtime ${hours}h ${minutes}m | Released on ${releaseDate}`;
+                        article.appendChild(metaInfo);
+                        //add genres
+                        const genres = document.createElement("p");
+                        movie.Genres.forEach(genre => {
+                            const genreSpan = document.createElement("span");
+                            genreSpan.className = "genre";
+                            genreSpan.textContent = genre + " ";
+                            genres.appendChild(genreSpan);
+                        })
+                        article.append(genres);
+                        //add plot
+                        const plot = document.createElement("p");
+                        plot.textContent = movie.Plot;
+                        article.appendChild(plot);
+
+                        function createList(headingText, itemsArray) {
+                            const heading = document.createElement("h3");
+                            heading.textContent = headingText;
+                            article.appendChild(heading);
+
+                            const ul = document.createElement("ul");
+                            itemsArray.forEach(item => {
+                                const li = document.createElement("li");
+                                li.textContent = item;
+                                ul.appendChild(li);
+                            });
+                            article.appendChild(ul);
+                        }
+                        createList("Directors", movie.Directors);
+                        createList("Writers", movie.Writers);
+                        createList("Actors", movie.Actors);
+                        
+                        bodyElement.appendChild(article);
+                    });
                 } else {
                     bodyElement.append("Daten konnten nicht geladen werden, Status " + xhr.status + " - " + xhr.statusText)
                 }
