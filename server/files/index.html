@@ -99,7 +99,7 @@
                         const plot = document.createElement("p");
                         plot.textContent = movie.Plot;
                         article.appendChild(plot);
-
+                        //add unorderedList to manage Directors, Writers and Actors
                         function createList(headingText, itemsArray) {
                             const heading = document.createElement("h3");
                             heading.textContent = headingText;
@@ -117,6 +117,7 @@
                         createList("Writers", movie.Writers);
                         createList("Actors", movie.Actors);
                         
+                        //adds everything onto the page
                         bodyElement.appendChild(article);
                     });
                 } else {
